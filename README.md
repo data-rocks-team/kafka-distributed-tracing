@@ -79,3 +79,27 @@ Kafka Cheat Sheet
 
 ### Starting broker
 `$ kafka-server-start.sh config/server.properties`
+
+## Producer config
+
+### Replica acknowledgment
+
+`acks=0` (Broker does not reply to producer)
+`acks=1` (Leader response is requested = replication not guaranteed = producer retries if no ack received)
+`acks=all` (Replicas + Leader to acknowledge) => Adds latency
+ 
+`min.insync.replicas=2` (most common) must be used with acks=all => at least 2 brokers that are ISR including leader must respond
+
+`retries` => default is max int for kafka >2.1
+`retry.backoff.ms` = setting is by default 100 ms
+`delivery.timeout.ms` = 120000 == 2 minutes (to prevent producer retrying till max int)
+
+### Idempotent producer
+`producerProperties.put("enable.idempotence",true)`
+
+### Save producer: impact on throughput
+enable.idempotence=true
+min.insync.replicas=2 (min_)
+acks=all
+max.in.flight.requests.per.connection=5
+retries=MAX_INT
