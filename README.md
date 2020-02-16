@@ -93,13 +93,41 @@ Kafka Cheat Sheet
 `retries` => default is max int for kafka >2.1
 `retry.backoff.ms` = setting is by default 100 ms
 `delivery.timeout.ms` = 120000 == 2 minutes (to prevent producer retrying till max int)
+`max.in.flight.requests.per.connection` = 5 //up to 5 messages individually sent at the same time
 
 ### Idempotent producer
 `producerProperties.put("enable.idempotence",true)`
 
 ### Save producer: impact on throughput
+```
 enable.idempotence=true
 min.insync.replicas=2 (min_)
 acks=all
 max.in.flight.requests.per.connection=5
 retries=MAX_INT
+```
+### Compression
+Producer batch = compressed batch = big decrease in size, decreasing latency with sending to kafka and replicating to brokers
+Use to increase performance with high throughput
+
+### Batching
+While messages are in flight, kafka batches new ones to sent them all at once
+
+`linger.ms` = 0 (default) = number of milliseconds producer waits
+`linger.ms = 5` = increased changes to send message in a batch
+
+If batch is full it will be sent to kafka before linger.ms gets completed
+
+`batch.size = 16` (Default) => increase to 32, 64 to increase throughput
+
+### Buffering
+When producer produces faster than the broker can take = records are buffered in memory
+- if buffer is full, send() method will start to block - data production will wait
+
+Exception is thrown:
+- producer has full buffer
+- broker not accepting new data
+- 60 seconds have elapsed
+
+`buffer.memory=33553331 (32MB)` (Default)
+`max.block.ms=60000 (60s)` (Default) Time .send method will block until throwing an exception
