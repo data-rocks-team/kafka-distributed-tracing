@@ -42,6 +42,8 @@ public class ElasticSearchTwitterConsumer {
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "3");
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer(properties);
 
@@ -65,6 +67,8 @@ public class ElasticSearchTwitterConsumer {
         while(true){
             ConsumerRecords<String,String> records = consumer.poll(Duration.ofMillis(100));
 
+            logger.info("Received " + records.count() + " records");
+
             for (ConsumerRecord record: records) {
                 String id = extractIdFromTweet(record.value().toString());
 
@@ -77,6 +81,10 @@ public class ElasticSearchTwitterConsumer {
 
                 logger.info(indexResponse.getId());
             }
+
+            logger.info("Committing offsets...");
+            consumer.commitSync();
+            logger.info("Offsets have been committed");
         }
 //        client.close();
 

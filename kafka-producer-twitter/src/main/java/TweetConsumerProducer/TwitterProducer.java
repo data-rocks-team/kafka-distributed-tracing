@@ -30,7 +30,7 @@ public class TwitterProducer {
     private final String secret = System.getenv("secret");
     private final Logger logger = LoggerFactory.getLogger(TwitterProducer.class.getName());
 
-    List<String> terms = Lists.newArrayList("java");
+    List<String> terms = Lists.newArrayList("java", "kafka", "javascript");
 
     public TwitterProducer() {}
 
