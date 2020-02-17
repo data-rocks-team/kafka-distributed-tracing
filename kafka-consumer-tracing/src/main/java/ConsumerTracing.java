@@ -47,7 +47,7 @@ public class ConsumerTracing {
             ConsumerRecords<String,String> records = consumer.poll(Duration.ofMillis(100));
 
             for (ConsumerRecord record: records){
-                Span span = kafkaTracing.nextSpan(record).name("consumeRecord").start();
+                Span span = kafkaTracing.nextSpan(record).name("kafka-to-consumer").start();
                 span.annotate("Start consuming");
 
                 logger.info("key: " + record.key() + "value: " + record.value());
