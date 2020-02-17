@@ -134,6 +134,7 @@ Exception is thrown:
 
 ## Kafka Tracing via zipkin
 Run docker compose up to start zipkin and the elasticsearch zipkin relies on to save the spans
+Create topic for testing: test_tracing
 
 ### Configuration
 Producer and Consumer configuration is similar
@@ -159,6 +160,10 @@ Create spans:
 - in producer use the reporter flush to force messages to be sent to zipkin. If producer is too fast, its span will not have time to be sent to zipkin
 
 ```java
+//Create record
+ProducerRecord<String, String> record = new ProducerRecord<>("test_tracing", null, "Test");
+
+//Create span
 ScopedSpan span = tracer.startScopedSpan("produce-to-kafka");
 span.tag("name", "sending-kafka-record");
 span.annotate("starting operation");
