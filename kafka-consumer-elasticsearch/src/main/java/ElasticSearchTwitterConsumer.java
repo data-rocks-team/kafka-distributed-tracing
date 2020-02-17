@@ -1,15 +1,19 @@
+import brave.Span;
+import brave.Tracer;
+import brave.Tracing;
+import brave.kafka.clients.KafkaTracing;
+import brave.sampler.Sampler;
 import com.google.gson.JsonParser;
 import org.apache.http.HttpHost;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -17,6 +21,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -24,7 +30,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class ElasticSearchTwitterConsumer {
-    final static Logger logger = LoggerFactory.getLogger(Producer.class);
+    final static Logger logger = LoggerFactory.getLogger(ElasticSearchTwitterConsumer.class);
 
     public static RestHighLevelClient createClient(){
         RestClientBuilder builder = RestClient
@@ -49,7 +55,7 @@ public class ElasticSearchTwitterConsumer {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer(properties);
 
-        consumer.subscribe(Collections.singletonList(topic));
+//        consumer.subscribe(Collections.singletonList(topic));
 
         return consumer;
     }
@@ -61,13 +67,25 @@ public class ElasticSearchTwitterConsumer {
     public static void main(String[] args) throws IOException {
         final String topic = "twitter_test";
 
+        //CONFIGURE TRACING
+        final URLConnectionSender sender = URLConnectionSender.newBuilder().endpoint("http://127.0.0.1:9411/api/v2/spans").build();
+        final AsyncReporter reporter = AsyncReporter.builder(sender).build();
+        final Tracing tracing = Tracing.newBuilder().localServiceName("twitter-consumer").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
+        final KafkaTracing kafkaTracing = KafkaTracing.newBuilder(tracing).remoteServiceName("kafka").build();
+        final Tracer tracer = Tracing.currentTracer();
+        //END CONFIGURATION
+
         RestHighLevelClient client = createClient();
 
         //Run the index request using a client
+
         KafkaConsumer<String, String> consumer = createConsumer(topic);
+        Consumer<String, String> tracingConsumer = kafkaTracing.consumer(consumer);
+
+        tracingConsumer.subscribe(Collections.singletonList(topic));
 
         while(true){
-            ConsumerRecords<String,String> records = consumer.poll(Duration.ofMillis(100));
+            ConsumerRecords<String,String> records = tracingConsumer.poll(Duration.ofMillis(100));
 
             int recordCounts = records.count();
             logger.info("Received " + recordCounts + " records");
@@ -76,6 +94,11 @@ public class ElasticSearchTwitterConsumer {
 
             for (ConsumerRecord record: records) {
                 try {
+
+                    Span span = kafkaTracing.nextSpan(record).name("consume-tweet").start();
+                    span.annotate("start consuming");
+
+                    //*****
                     String id = extractIdFromTweet(record.value().toString());
 
                     //Index Request
@@ -83,6 +106,11 @@ public class ElasticSearchTwitterConsumer {
                             .source(record.value().toString(), XContentType.JSON);
 
                     bulkRequest.add(indexRequest);
+                    //******
+
+                    span.annotate("consume finished");
+                    span.finish();
+
                 } catch (NullPointerException e){
                     logger.warn("skipping bad data: " + record.value());
                 }
