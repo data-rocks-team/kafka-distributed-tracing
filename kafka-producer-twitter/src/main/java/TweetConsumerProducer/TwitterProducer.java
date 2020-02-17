@@ -1,5 +1,10 @@
 package TweetConsumerProducer;
 
+import brave.ScopedSpan;
+import brave.Tracer;
+import brave.Tracing;
+import brave.kafka.clients.KafkaTracing;
+import brave.sampler.Sampler;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -10,12 +15,17 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import java.util.List;
 import java.util.Properties;
@@ -47,6 +57,18 @@ public class TwitterProducer {
 
         KafkaProducer<String, String> producer = createKafkaProducer();
 
+        final Config config = ConfigFactory.load();
+
+        //CONFIGURE TRACING
+        final URLConnectionSender sender = URLConnectionSender.newBuilder().endpoint("http://127.0.0.1:9411/api/v2/spans").build();
+        final AsyncReporter reporter = AsyncReporter.builder(sender).build();
+        final Tracing tracing = Tracing.newBuilder().localServiceName("twitter-producer").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
+        final KafkaTracing kafkaTracing = KafkaTracing.newBuilder(tracing).remoteServiceName("kafka").build();
+        final Tracer tracer = Tracing.currentTracer();
+        //END CONFIGURATION
+
+        final Producer<String, String> tracedKafkaProducer = kafkaTracing.producer(producer);
+
         //Shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(()-> {
             logger.info("stopping application...");
@@ -73,12 +95,22 @@ public class TwitterProducer {
                 //Create record
                 ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, msg);
 
+                //CREATE SPAN
+                ScopedSpan span = tracer.startScopedSpan("twitter-to-kafka");
+                span.tag("name", "sending-kafka-record");
+                span.annotate("starting operation");
+
+                span.annotate("sending message to kafka");
+                tracedKafkaProducer.send(record);
+                span.annotate("complete operation");
+                span.finish();
+
                 //Publish to kafka topic
-                producer.send(record, (metadata, exception) -> {
-                    if (exception != null) {
-                        logger.error("Something bad happened", exception);
-                    }
-                });
+//                producer.send(record, (metadata, exception) -> {
+//                    if (exception != null) {
+//                        logger.error("Something bad happened", exception);
+//                    }
+//                });
             }
         }
 

@@ -12,9 +12,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="kafka-basic-tracing-zipkin" target="1.8" />
       <module name="kafka-basics" target="1.8" />
       <module name="kafka-consumer-elasticsearch" target="1.8" />
       <module name="kafka-producer-twitter" target="1.8" />
+      <module name="kafka-tracing-producer" target="1.8" />
       <module name="Kafka_cheat_sheet" target="1.8" />
     </bytecodeTargetLevel>
   </component>

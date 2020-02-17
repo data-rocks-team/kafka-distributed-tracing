@@ -33,8 +33,3 @@ services:
       - 9411:9411
     depends_on:
       - storage
-
-#  dependencies:
-#    environment:
-#      - STORAGE_TYPE=elasticsearch
-#      - ES_HOSTS=elasticsearch
