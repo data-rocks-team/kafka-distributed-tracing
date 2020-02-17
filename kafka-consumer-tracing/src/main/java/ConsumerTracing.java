@@ -34,14 +34,14 @@ public class ConsumerTracing {
         //CONFIGURE TRACING
         final URLConnectionSender sender = URLConnectionSender.newBuilder().endpoint("http://127.0.0.1:9411/api/v2/spans").build();
         final AsyncReporter reporter = AsyncReporter.builder(sender).build();
-        final Tracing tracing = Tracing.newBuilder().localServiceName("simpleConsumer_test").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
+        final Tracing tracing = Tracing.newBuilder().localServiceName("Kafka_Consumer").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
         final KafkaTracing kafkaTracing = KafkaTracing.newBuilder(tracing).remoteServiceName("kafka").build();
         final Tracer tracer = Tracing.currentTracer();
         //END CONFIGURATION
 
         Consumer<String, String> tracingConsumer = kafkaTracing.consumer(consumer);
 
-        tracingConsumer.subscribe(Collections.singleton("test_tracing"));
+        tracingConsumer.subscribe(Collections.singleton("test_tracing_stream"));
 
         while(true){
             ConsumerRecords<String,String> records = consumer.poll(Duration.ofMillis(100));

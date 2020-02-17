@@ -31,7 +31,7 @@ public class ProducerTracing {
         //CONFIGURE TRACING
         final URLConnectionSender sender = URLConnectionSender.newBuilder().endpoint("http://127.0.0.1:9411/api/v2/spans").build();
         final AsyncReporter reporter = AsyncReporter.builder(sender).build();
-        final Tracing tracing = Tracing.newBuilder().localServiceName("simpleProducer_test").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
+        final Tracing tracing = Tracing.newBuilder().localServiceName("Kafka_Producer").sampler(Sampler.ALWAYS_SAMPLE).spanReporter(reporter).build();
         final KafkaTracing kafkaTracing = KafkaTracing.newBuilder(tracing).remoteServiceName("kafka").build();
         final Tracer tracer = Tracing.currentTracer();
         //END CONFIGURATION
@@ -47,7 +47,7 @@ public class ProducerTracing {
         }));
 
         //Create record
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, "Test");
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, "some small test");
 
         //CREATE SPAN
         ScopedSpan span = tracer.startScopedSpan("produce-to-kafka");

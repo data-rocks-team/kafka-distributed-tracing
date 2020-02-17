@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="kafka-producer-twitter" />
-        <module name="kafka-consumer-elasticsearch" />
-        <module name="kafka-producer-tracing" />
         <module name="kafka-basics" />
+        <module name="kafka-streaming" />
+        <module name="kafka-producer-tracing" />
         <module name="kafka-consumer-tracing" />
+        <module name="kafka-consumer-elasticsearch" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -20,6 +20,7 @@
       <module name="kafka-consumer-tracing" target="1.8" />
       <module name="kafka-producer-tracing" target="1.8" />
       <module name="kafka-producer-twitter" target="1.8" />
+      <module name="kafka-streaming" target="1.8" />
       <module name="kafka-tracing-producer" target="1.8" />
       <module name="Kafka_cheat_sheet" target="1.8" />
     </bytecodeTargetLevel>
