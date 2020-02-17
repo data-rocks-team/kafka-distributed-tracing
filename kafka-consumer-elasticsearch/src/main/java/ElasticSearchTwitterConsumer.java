@@ -10,7 +10,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -31,7 +30,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class ElasticSearchTwitterConsumer {
-    final static Logger logger = LoggerFactory.getLogger(Producer.class);
+    final static Logger logger = LoggerFactory.getLogger(ElasticSearchTwitterConsumer.class);
 
     public static RestHighLevelClient createClient(){
         RestClientBuilder builder = RestClient

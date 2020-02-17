@@ -33,7 +33,7 @@ Kafka Cheat Sheet
 ### Get the consumer offsets for a topic
 `$ kafka-consumer-offset-checker.sh --zookeeper=localhost:2181 --topic=mytopic --group=my_consumer_group`
 
-## Kafka Consumer Groups
+## Kafka ConsumerTracing Groups
 
 ### List the consumer groups known to Kafka
 

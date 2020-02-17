@@ -1,5 +1,3 @@
-package TweetConsumerProducer;
-
 import brave.ScopedSpan;
 import brave.Tracer;
 import brave.Tracing;
@@ -15,8 +13,6 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -54,10 +50,9 @@ public class TwitterProducer {
         //Twitter client
         Client client = createTwitterClient(msgQueue);
         client.connect();
+        //END
 
         KafkaProducer<String, String> producer = createKafkaProducer();
-
-        final Config config = ConfigFactory.load();
 
         //CONFIGURE TRACING
         final URLConnectionSender sender = URLConnectionSender.newBuilder().endpoint("http://127.0.0.1:9411/api/v2/spans").build();
@@ -104,13 +99,6 @@ public class TwitterProducer {
                 tracedKafkaProducer.send(record);
                 span.annotate("complete operation");
                 span.finish();
-
-                //Publish to kafka topic
-//                producer.send(record, (metadata, exception) -> {
-//                    if (exception != null) {
-//                        logger.error("Something bad happened", exception);
-//                    }
-//                });
             }
         }
 
