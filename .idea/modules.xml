@@ -3,13 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Kafka_cheat_sheet.iml" filepath="$PROJECT_DIR$/.idea/Kafka_cheat_sheet.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kafka-basics/kafka-basics.iml" filepath="$PROJECT_DIR$/kafka-basics/kafka-basics.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kafka-consumer-elasticsearch/kafka-consumer-elasticsearch.iml" filepath="$PROJECT_DIR$/kafka-consumer-elasticsearch/kafka-consumer-elasticsearch.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafka-consumer-tracing/kafka-consumer-tracing.iml" filepath="$PROJECT_DIR$/kafka-consumer-tracing/kafka-consumer-tracing.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafka-producer-tracing/kafka-producer-tracing.iml" filepath="$PROJECT_DIR$/kafka-producer-tracing/kafka-producer-tracing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kafka-producer-twitter/kafka-producer-twitter.iml" filepath="$PROJECT_DIR$/kafka-producer-twitter/kafka-producer-twitter.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafka-streaming/kafka-streaming.iml" filepath="$PROJECT_DIR$/kafka-streaming/kafka-streaming.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kafka-streaming-json-to-avro/kafka-streaming-json-to-avro.iml" filepath="$PROJECT_DIR$/kafka-streaming-json-to-avro/kafka-streaming-json-to-avro.iml" />
     </modules>
   </component>
 </project>

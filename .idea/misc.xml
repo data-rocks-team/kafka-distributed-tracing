@@ -11,7 +11,11 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/kafka-basics/pom.xml" />
+        <option value="$PROJECT_DIR$/kafka-consumer-elasticsearch/pom.xml" />
         <option value="$PROJECT_DIR$/kafka-producer-twitter/kafka-streaming/pom.xml" />
+        <option value="$PROJECT_DIR$/kafka-producer-twitter/pom.xml" />
+        <option value="$PROJECT_DIR$/kafka-streaming-json-to-avro/pom.xml" />
       </set>
     </option>
   </component>
