@@ -4,9 +4,34 @@
 # It extends the default configuration from docker-compose.yml to run the
 # zipkin-elasticsearch container instead of the zipkin-mysql container.
 
-version: '2'
+version: '2.1'
 
 services:
+  zookeeper:
+    image: zookeeper:3.5
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:5.4.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "test_tracing:3:1,test_tracing_stream:3:1"
+    depends_on:
+      - zookeeper
+
   # Run Elasticsearch
   storage:
     image: elasticsearch:7.6.0
@@ -33,3 +58,4 @@ services:
       - 9411:9411
     depends_on:
       - storage
+

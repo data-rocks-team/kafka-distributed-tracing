@@ -15,6 +15,7 @@
         <module>kafka-producer-tracing</module>
         <module>kafka-consumer-tracing</module>
         <module>kafka-streaming</module>
+        <module>kafka-streaming-json-to-avro</module>
     </modules>
 
     <properties>

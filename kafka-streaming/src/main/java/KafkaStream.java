@@ -1,11 +1,7 @@
-import brave.Span;
-import brave.Tracer;
 import brave.Tracing;
-import brave.kafka.clients.KafkaTracing;
 import brave.kafka.streams.KafkaStreamsTracing;
 import brave.sampler.Sampler;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,9 +33,7 @@ public class KafkaStream {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> data = builder.stream("test_tracing");
-
         KStream<String, String> streamData = data.mapValues(v -> v.toUpperCase());
-
         streamData.to("test_tracing_stream", Produced.with(Serdes.String(), Serdes.String()));
 
         KafkaStreams streams = kafkaStreamsTracing.kafkaStreams(builder.build(), config);

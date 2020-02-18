@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/kafka-producer-tracing/kafka-producer-tracing.iml" filepath="$PROJECT_DIR$/kafka-producer-tracing/kafka-producer-tracing.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafka-producer-twitter/kafka-producer-twitter.iml" filepath="$PROJECT_DIR$/kafka-producer-twitter/kafka-producer-twitter.iml" />
       <module fileurl="file://$PROJECT_DIR$/kafka-streaming/kafka-streaming.iml" filepath="$PROJECT_DIR$/kafka-streaming/kafka-streaming.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kafka-streaming-json-to-avro/kafka-streaming-json-to-avro.iml" filepath="$PROJECT_DIR$/kafka-streaming-json-to-avro/kafka-streaming-json-to-avro.iml" />
     </modules>
   </component>
 </project>
