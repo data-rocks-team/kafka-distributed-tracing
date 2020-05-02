@@ -7,7 +7,7 @@ Go to localhost:9411 to check the traced record in zipkin UI
 
 Using the Brave(Java) instrumentation library for zipkin: https://github.com/openzipkin/brave
 
-Zipkin tracing system saves data ino either ElasticSearch of Cassandra.
+Zipkin tracing system saves data into either ElasticSearch or Cassandra.
 
 ### Zipkin Configuration
 
